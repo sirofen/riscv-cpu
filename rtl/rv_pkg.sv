@@ -104,9 +104,6 @@ package rv_pkg;
     logic [4:0] reg_rs1;
     logic [4:0] reg_rs2;
 
-    logic [31:0] read_data1;
-    logic [31:0] read_data2;
-
     logic [63:0] imm;
 
     logic [4:0] inst_rd;  // [11-7]

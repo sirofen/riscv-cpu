@@ -116,6 +116,9 @@ module cpu
   add_op_fwd_t fwd_a;
   add_op_fwd_t fwd_b;
 
+  logic [31:0] reg_data_fwd_a;
+  logic [31:0] reg_data_fwd_b;
+
   fwd_unit rf_fwd (
       .i_mem_rd(ex_mem_regs_to_mem.inst_rd),
       .i_mem_r_we(ex_mem_regs_to_mem.wb_ctrl.reg_we),
@@ -129,15 +132,15 @@ module cpu
 
   always_comb begin
     unique case (fwd_a)
-      FWD_MEM_WB: reg_data1_to_ex = reg_data_from_wb;
-      FWD_EX_MEM: reg_data1_to_ex = ex_mem_regs_to_mem.alu_out[31:0];
-      default: reg_data1_to_ex = reg_data1_from_id;
+      FWD_MEM_WB: reg_data_fwd_a = reg_data_from_wb;
+      FWD_EX_MEM: reg_data_fwd_a = ex_mem_regs_to_mem.alu_out[31:0];
+      default: reg_data_fwd_a = reg_data1_from_id;
     endcase
 
     unique case (fwd_b)
-      FWD_MEM_WB: reg_data2_to_ex = reg_data_from_wb;
-      FWD_EX_MEM: reg_data2_to_ex = ex_mem_regs_to_mem.alu_out[31:0];
-      default: reg_data2_to_ex = reg_data2_from_id;
+      FWD_MEM_WB: reg_data_fwd_b = reg_data_from_wb;
+      FWD_EX_MEM: reg_data_fwd_b = ex_mem_regs_to_mem.alu_out[31:0];
+      default: reg_data_fwd_b = reg_data2_from_id;
     endcase
   end
 
@@ -166,6 +169,9 @@ module cpu
     end
 
     // ex
+    reg_data1_to_ex <= reg_data_fwd_a;
+    reg_data2_to_ex <= reg_data_fwd_b;
+
     branch_target_to_if <= branch_addr_from_ex;
     do_branch_to_if <= do_branch_from_ex;
 
