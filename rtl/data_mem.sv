@@ -9,6 +9,7 @@ module data_mem
     parameter unsigned MemoryBytesSize = 4
 ) (
     input  logic              i_clk,
+    input  logic              i_rst,
     input  logic              i_we,
     input  logic              i_re,
     input  logic       [31:0] i_addr,
@@ -38,8 +39,12 @@ module data_mem
     end
   end
 
-  always_ff @(posedge i_clk) begin
-    if (i_we && i_addr < MemoryBytesSize * 4) begin
+  always_ff @(posedge i_clk or negedge i_rst) begin
+    if (!i_rst) begin
+      for (int i = 0; i < MemoryBytesSize * 4 - 1; i++) begin
+        memory[i] <= 8'b0;
+      end
+    end else if (i_we && i_addr < MemoryBytesSize * 4) begin
       case (i_mem_size)
         BYTE: begin
           memory[i_addr] <= i_data[7:0];

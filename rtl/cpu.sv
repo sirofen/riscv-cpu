@@ -157,6 +157,10 @@ module cpu
   assign flush_if_id = do_branch_from_ex;
   assign flush_id_ex = do_branch_from_ex;
 
+  assign reg_we_to_id = reg_we_from_wb;
+  assign write_reg_to_id = reg_from_wb;
+  assign write_reg_data_to_id = reg_data_from_wb;
+
   always_ff @(posedge i_clk) begin
     if (load_mem_stall) begin
       id_ex_regs_to_ex <= 0;
@@ -180,9 +184,6 @@ module cpu
 
     // wb
     mem_wb_regs_to_wb <= mem_wb_regs_from_mem;
-    reg_we_to_id <= reg_we_from_wb;
-    write_reg_to_id <= reg_from_wb;
-    write_reg_data_to_id <= reg_data_from_wb;
 
   end
 

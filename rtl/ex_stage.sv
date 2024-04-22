@@ -32,7 +32,7 @@ module ex_stage
   assign o_do_branch = (i_id_ex_regs.do_branch && (!do_branch || i_id_ex_regs.alu_ctrl == ALU_ADD));
 
   alu alu (
-      .i_a_op({32'b0, i_reg_data1}),
+      .i_a_op(add_op_a),
       .i_b_op(alu_op_b),
       .i_pc(i_id_ex_regs.pc),
       .i_alu_ctrl(i_id_ex_regs.alu_ctrl),

@@ -26,6 +26,8 @@ module mem_stage
   localparam MMIO_BASE_ADDR = 32'h100;
   localparam MMIO_ADDR_MASK = 32'hF00;
 
+  localparam MEMORY_MASK = 32'hff;
+
   mem_ctrl_reg_t mem_ctrl;
   assign mem_ctrl = i_ex_mem_regs.mem_ctrl;
 
@@ -41,8 +43,9 @@ module mem_stage
 
   data_mem memory (
       .i_clk(i_clk),
-      .i_we(mem_ctrl.mem_write && (addr_read & MMIO_ADDR_MASK) != MMIO_BASE_ADDR),
-      .i_re(mem_ctrl.mem_read && (addr_read & MMIO_ADDR_MASK) != MMIO_BASE_ADDR),
+      .i_rst(i_rst),
+      .i_we(mem_ctrl.mem_write && (addr_read & MEMORY_MASK) != 0),
+      .i_re(mem_ctrl.mem_read && (addr_read & MEMORY_MASK) != 0),
       .i_addr(addr_read),
       .i_data(i_ex_mem_regs.read_data2),
       .i_mem_size(mem_ctrl.rw_sz),
@@ -62,8 +65,8 @@ module mem_stage
       .i_mmio_addr(addr_read),
       .i_mmio_data_in(i_ex_mem_regs.read_data2[7:0]),
       .o_mmio_data_out(uart_mmio_data_out),
-      .i_mmio_we(mmio_we && (addr_read & MMIO_ADDR_MASK) == MMIO_UART_ADDR), //fix
-      .i_mmio_re(mmio_re && (addr_read & MMIO_ADDR_MASK) == MMIO_UART_ADDR)
+      .i_mmio_we(mem_ctrl.mem_write && (addr_read & MMIO_ADDR_MASK) == MMIO_UART_ADDR),  //fix
+      .i_mmio_re(mem_ctrl.mem_read && (addr_read & MMIO_ADDR_MASK) == MMIO_UART_ADDR)
   );
 
   gpio_mmio #(
@@ -76,8 +79,8 @@ module mem_stage
       .i_mmio_addr(addr_read),
       .i_mmio_data_in(i_ex_mem_regs.read_data2[7:0]),
       .o_mmio_data_out(gpio_mmio_data_out),
-      .i_mmio_we((addr_read & MMIO_ADDR_MASK) == MMIO_GPIO_ADDR),
-      .i_mmio_re((addr_read & MMIO_ADDR_MASK) == MMIO_GPIO_ADDR)
+      .i_mmio_we(mem_ctrl.mem_write && (addr_read & MMIO_ADDR_MASK) == MMIO_GPIO_ADDR),
+      .i_mmio_re(mem_ctrl.mem_read && (addr_read & MMIO_ADDR_MASK) == MMIO_GPIO_ADDR)
   );
 
   always_comb begin
