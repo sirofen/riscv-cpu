@@ -6,7 +6,7 @@
 module data_mem
   import rv_pkg::*;
 #(
-    parameter unsigned MemoryBytesSize = 4
+    parameter unsigned MemoryBytesSize = 'h8
 ) (
     input  logic              i_clk,
     input  logic              i_rst,
