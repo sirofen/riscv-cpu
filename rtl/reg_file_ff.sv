@@ -27,7 +27,7 @@ module reg_file_ff #(
   logic [REGS_NUM-1:0] write_enable_dec_0;
 
   assign o_rdata_0 = (i_wreg_0 == i_rreg_0 && i_we_0 && i_rreg_0 != 0) ? i_wdata_0 : regs[i_rreg_0];
-  assign o_rdata_1 = (i_wreg_0 == i_rreg_1 && i_we_0 && i_rreg_0 != 0) ? i_wdata_0 : regs[i_rreg_1];
+  assign o_rdata_1 = (i_wreg_0 == i_rreg_1 && i_we_0 && i_rreg_1 != 0) ? i_wdata_0 : regs[i_rreg_1];
 
   always_comb begin : write_enable_dec
     for (int unsigned i = 0; i < REGS_NUM; i++) begin
