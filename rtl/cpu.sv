@@ -161,6 +161,9 @@ module cpu
   assign write_reg_to_id = reg_from_wb;
   assign write_reg_data_to_id = reg_data_from_wb;
 
+  assign branch_target_to_if = branch_addr_from_ex;
+  assign do_branch_to_if = do_branch_from_ex;
+
   always_ff @(posedge i_clk) begin
     if (load_mem_stall) begin
       id_ex_regs_to_ex <= 0;
@@ -175,9 +178,6 @@ module cpu
     // ex
     reg_data1_to_ex <= reg_data1_from_id;
     reg_data2_to_ex <= reg_data2_from_id;
-
-    branch_target_to_if <= branch_addr_from_ex;
-    do_branch_to_if <= do_branch_from_ex;
 
     // mem
     ex_mem_regs_to_mem <= ex_mem_regs_from_ex;

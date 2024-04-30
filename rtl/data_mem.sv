@@ -6,7 +6,7 @@
 module data_mem
   import rv_pkg::*;
 #(
-    parameter unsigned MemoryBytesSize = 'h4
+    parameter unsigned MemoryBytesSize = 16
 ) (
     input  logic              i_clk,
     input  logic              i_rst,
@@ -18,10 +18,10 @@ module data_mem
     output logic       [31:0] o_data
 );
 
-  bit [7:0] memory[MemoryBytesSize*4-1];
+  bit [7:0] memory[MemoryBytesSize];
 
   always_comb begin
-    if (i_addr >= MemoryBytesSize * 4) begin
+    if (i_addr >= MemoryBytesSize) begin
       o_data = 32'b0;
     end else begin
       case (i_mem_size)
@@ -41,10 +41,10 @@ module data_mem
 
   always_ff @(posedge i_clk or negedge i_rst) begin
     if (!i_rst) begin
-      for (int i = 0; i < MemoryBytesSize * 4 - 1; i++) begin
+      for (int i = 0; i < MemoryBytesSize - 1; i++) begin
         memory[i] <= 8'b0;
       end
-    end else if (i_we && i_addr < MemoryBytesSize * 4) begin
+    end else if (i_we && i_addr < MemoryBytesSize) begin
       case (i_mem_size)
         BYTE: begin
           memory[i_addr] <= i_data[7:0];

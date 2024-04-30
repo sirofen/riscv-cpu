@@ -6,7 +6,7 @@
 
 module uart_mmio #(
     parameter integer CLOCK_HZ  = 50_000_000,
-    parameter integer BAUD_RATE = 115_200,
+    parameter integer BAUD_RATE = 115200,
     parameter integer BASE_ADDR = 32'h1000_0000
 ) (
     input  logic        i_clk,

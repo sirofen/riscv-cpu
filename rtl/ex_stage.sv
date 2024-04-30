@@ -22,21 +22,21 @@ module ex_stage
   logic [63:0] next_pc;
   logic [63:0] imm_sl;
 
-  logic do_branch;
+  logic alu_zf;
 
   assign add_op_a = {32'b0, i_reg_data1};
 
   assign alu_op_b = (i_id_ex_regs.alu_src_mux == REG_2) ? {32'b0, i_reg_data2} : i_id_ex_regs.imm;
 
   // ALU_ADD is set for alu JALR instruction
-  assign o_do_branch = (i_id_ex_regs.do_branch && (!do_branch || i_id_ex_regs.alu_ctrl == ALU_ADD));
+  assign o_do_branch = (i_id_ex_regs.do_branch && (!alu_zf || i_id_ex_regs.alu_ctrl == ALU_ADD));
 
   alu alu (
       .i_a_op(add_op_a),
       .i_b_op(alu_op_b),
       .i_pc(i_id_ex_regs.pc),
       .i_alu_ctrl(i_id_ex_regs.alu_ctrl),
-      .o_zero_flag(do_branch),
+      .o_zero_flag(alu_zf),
       .o_res(alu_out_val)
   );
 

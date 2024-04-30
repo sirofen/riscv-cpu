@@ -2,14 +2,14 @@
 `define INST_MEM
 
 module inst_mem #(
-    parameter integer MemoryBytesSize = 64,
+    parameter integer MemoryBytesSize = 256,
     parameter Firware = "bin/fw.bin"
 ) (
     input  logic [31:0] i_read_addr,
     output logic [31:0] o_instruction
 );
 
-  bit [31:0] memory[MemoryBytesSize];
+  logic [31:0] memory[MemoryBytesSize];
 
   initial begin
     $readmemh(Firware, memory);

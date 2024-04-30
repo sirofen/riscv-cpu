@@ -42,8 +42,8 @@ module mem_stage
   data_mem memory (
       .i_clk(i_clk),
       .i_rst(i_rst),
-      .i_we(mem_ctrl.mem_write && ((addr_read & MEMORY_MASK) < 32'h100)),
-      .i_re(mem_ctrl.mem_read && ((addr_read & MEMORY_MASK) < 32'h100)),
+      .i_we(mem_ctrl.mem_write && (addr_read < 32'h100)),
+      .i_re(mem_ctrl.mem_read && (addr_read < 32'h100)),
       .i_addr(addr_read),
       .i_data(i_ex_mem_regs.read_data2),
       .i_mem_size(mem_ctrl.rw_sz),
