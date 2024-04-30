@@ -15,15 +15,32 @@ int main(int argc, char **argv) {
 
   vluint64_t vtime = 0;
   int clock = 0;
-  
+
+  int uart_rx = 1;
+
   while (!Verilated::gotFinish()) {
     vtime += 1;
     if (vtime % 1 == 0)
       clock ^= 1;
+
+    if (vtime == 7) {
+      uart_rx = 0;
+    } else if (vtime == 20) {
+      uart_rx = 1;
+    }
+    // switch (vtime) {
+    //   case 7: {
+    //     uart_rx = 0;
+    //   }
+    //   case 11: {
+    //     uart_rx = 1;
+    //   }
+    // }
     top_module.i_clk = clock;
+    top_module.uart_rx = uart_rx;
     top_module.eval();
     vcd.dump(vtime);
-    if (vtime > 500)
+    if (vtime > 5500)
       break;
   }
   top_module.final();

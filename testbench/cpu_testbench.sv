@@ -2,10 +2,11 @@
 `include "cpu.sv"
 
 module cpu_testbench (
-    input logic i_clk
+    input logic i_clk,
+    input logic uart_rx
 );
   logic rst = 1;
-  logic uart_rx;
+ // logic uart_rx;
   logic uart_tx;
   logic [3:0] led;
 
