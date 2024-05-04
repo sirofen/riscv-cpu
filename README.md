@@ -1,7 +1,7 @@
 # RISC-V 5-Stage Pipeline CPU
 ## Overview
 
-This repository contains implementation of a 5-stage RISC-V pipeline CPU described in `Computer Organization and Design RISC-V Edition" by David A. Patterson and John L. Hennessy.` implemented in SystemVerilog for educational purposes.\
+This repository contains implementation of a 5-stage RISC-V pipeline CPU described in 'Computer Organization and Design RISC-V Edition" by David A. Patterson and John L. Hennessy.' implemented in SystemVerilog for educational purposes.\
 This project features register forwarding to enhance data flow and reduce pipeline stalls, along with MMIO for device interfacing.
 
 ## Components
