@@ -4,7 +4,7 @@
 # 0x108 {6'b0, [1: 1] tx_busy, [0: 0] rx_valid}
 
 
-# initialization and Setup
+# initialization and setup
 _start:
     addi s0, zero, 0x100    # UART MMIO
     addi s1, zero, 16       # Store size
