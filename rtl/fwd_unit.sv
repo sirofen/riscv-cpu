@@ -1,3 +1,5 @@
+`ifndef FWD_UNIT
+`define FWD_UNIT
 
 `include "rv_pkg.sv"
 
@@ -39,3 +41,4 @@ module fwd_unit
   end
 
 endmodule
+`endif

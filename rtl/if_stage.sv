@@ -34,7 +34,7 @@ module if_stage
       .o_pc(program_counter)
   );
 
-  logic [31:0] instruction = 0;
+  logic [31:0] instruction;
 
   inst_mem idata (
       .i_read_addr  (program_counter[31:0]),

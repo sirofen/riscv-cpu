@@ -1,3 +1,5 @@
+`ifndef CONTROL
+`define CONTROL
 
 `include "rv_pkg.sv"
 
@@ -194,3 +196,4 @@ module control
   end
 
 endmodule
+`endif
