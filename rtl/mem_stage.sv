@@ -24,8 +24,6 @@ module mem_stage
   localparam MMIO_BASE_ADDR = 32'h100;
   localparam MMIO_ADDR_MASK = 32'hF00;
 
-  localparam MEMORY_MASK = 32'hff;
-
   mem_ctrl_reg_t mem_ctrl;
   assign mem_ctrl = i_ex_mem_regs.mem_ctrl;
 
@@ -42,8 +40,8 @@ module mem_stage
   data_mem memory (
       .i_clk(i_clk),
       .i_rst(i_rst),
-      .i_we(mem_ctrl.mem_write && (addr_read < 32'h100)),
-      .i_re(mem_ctrl.mem_read && (addr_read < 32'h100)),
+      .i_we(mem_ctrl.mem_write && (addr_read < MMIO_UART_ADDR)),
+      .i_re(mem_ctrl.mem_read && (addr_read < MMIO_UART_ADDR)),
       .i_addr(addr_read),
       .i_data(i_ex_mem_regs.read_data2),
       .i_mem_size(mem_ctrl.rw_sz),
