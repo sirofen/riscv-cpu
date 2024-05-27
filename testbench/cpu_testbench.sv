@@ -12,7 +12,7 @@ module cpu_testbench (
 
   cpu cpu (
       .i_clk(i_clk),
-      .i_rst(rst),
+      .i_rstn(rst),
       .i_uart_rx(uart_rx),
       .o_uart_tx(uart_tx),
       .o_led(led)

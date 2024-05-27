@@ -3,7 +3,7 @@
 
 module pc (
     input  logic        i_clk,
-    input  logic        i_rst,
+    input  logic        i_rstn,
     input  logic        i_stall,
     input  logic        i_we,
     input  logic [63:0] i_pc,
@@ -12,8 +12,8 @@ module pc (
 
   logic [63:0] counter = 0;
 
-  always_ff @(posedge i_clk or negedge i_rst) begin
-    if (!i_rst) begin
+  always_ff @(posedge i_clk or negedge i_rstn) begin
+    if (!i_rstn) begin
       counter <= 64'b0;
     end else if (i_we) begin
       counter <= i_pc;

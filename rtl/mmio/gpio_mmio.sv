@@ -6,7 +6,7 @@ module gpio_mmio #(
     parameter integer BASE_ADDR  = 32'h2000_0000
 ) (
     input  logic                  i_clk,
-    input  logic                  i_rst,
+    input  logic                  i_rstn,
     output logic [GPIO_WIDTH-1:0] o_gpio,
     input  logic [          31:0] i_mmio_addr,
     input  logic [           7:0] i_mmio_data_in,
@@ -21,8 +21,8 @@ module gpio_mmio #(
 
   bit [GPIO_WIDTH-1:0] gpio_input_reg;
 
-  always_ff @(posedge i_clk or negedge i_rst) begin
-    if (!i_rst) begin
+  always_ff @(posedge i_clk or negedge i_rstn) begin
+    if (!i_rstn) begin
       gpio_reg <= {GPIO_WIDTH{1'b0}};
     end else begin
       if (i_mmio_we && i_mmio_addr == MMIO_GPIO_OUTPUT_ADDR) begin

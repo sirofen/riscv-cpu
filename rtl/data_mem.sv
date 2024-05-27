@@ -9,14 +9,19 @@ module data_mem
     parameter unsigned MemoryBytesSize = 16
 ) (
     input  logic              i_clk,
-    input  logic              i_rst,
+    input  logic              i_rstn,
     input  logic              i_we,
     input  logic              i_re,
     input  logic       [31:0] i_addr,
     input  logic       [31:0] i_data,
     input  mem_op_sz_e        i_mem_size,
-    output logic       [31:0] o_data
+    output logic       [31:0] o_data,
+    output logic              o_data_ready,
+    output logic              o_write_ready
 );
+
+  assign o_data_ready = 1'b1;
+  assign o_write_ready = 1'b1;
 
   bit [7:0] memory[MemoryBytesSize];
 
@@ -39,8 +44,8 @@ module data_mem
     end
   end
 
-  always_ff @(posedge i_clk or negedge i_rst) begin
-    if (!i_rst) begin
+  always_ff @(posedge i_clk or negedge i_rstn) begin
+    if (!i_rstn) begin
       for (int i = 0; i < MemoryBytesSize - 1; i++) begin
         memory[i] <= 8'b0;
       end

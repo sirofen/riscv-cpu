@@ -16,13 +16,15 @@ module cpu
 (
     input logic i_clk,
     // active low reset
-    input logic i_rst,
+    input logic i_rstn,
     input logic i_uart_rx,
     output logic o_uart_tx,
     output logic [3:0] o_led
 );
 
+  // stall signals
   logic load_mem_stall;
+  logic mem_hazard;
 
   // if
   logic do_branch_to_if;
@@ -65,7 +67,7 @@ module cpu
 
   if_stage if_stage (
       .i_clk(i_clk),
-      .i_rst(i_rst),
+      .i_rstn(i_rstn),
       .i_stall(load_mem_stall),
       .i_do_branch(do_branch_to_if),
       .i_branch_target(branch_target_to_if),
@@ -74,7 +76,7 @@ module cpu
 
   id_stage id_stage (
       .i_clk(i_clk),
-      .i_rst(i_rst),
+      .i_rstn(i_rstn),
       .i_reg_we(reg_we_to_id),
       .i_write_reg(write_reg_to_id),
       .i_write_reg_data(write_reg_data_to_id),
@@ -96,12 +98,13 @@ module cpu
 
   mem_stage mem_stage (
       .i_clk(i_clk),
-      .i_rst(i_rst),
+      .i_rstn(i_rstn),
       .i_uart_rx(i_uart_rx),
       .o_uart_tx(o_uart_tx),
       .o_gpio(o_led),
       .i_ex_mem_regs(ex_mem_regs_to_mem),
-      .o_mem_wb_regs(mem_wb_regs_from_mem)
+      .o_mem_wb_regs(mem_wb_regs_from_mem),
+      .o_mem_hazard(mem_hazard)
   );
 
   wb_stage wb_stage (
@@ -165,7 +168,7 @@ module cpu
   assign do_branch_to_if = do_branch_from_ex;
 
   always_ff @(posedge i_clk) begin
-    if (load_mem_stall) begin
+    if (load_mem_stall || mem_hazard) begin
       id_ex_regs_to_ex <= 0;
     end else begin
       // flush if/id if/ex regs if branch was taken

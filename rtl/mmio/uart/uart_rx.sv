@@ -6,7 +6,7 @@ module uart_rx #(
     parameter integer BAUD_RATE = 115_200
 ) (
     input  logic       i_clk,
-    input  logic       i_rst,
+    input  logic       i_rstn,
     input  logic       i_uart_rx,
     input  logic       i_read_ack,
     output logic [7:0] o_data,
@@ -26,8 +26,8 @@ module uart_rx #(
   logic [2:0] bit_index = 0;
   integer clk_cnt = 0;
 
-  always_ff @(posedge i_clk or negedge i_rst) begin
-    if (!i_rst) begin
+  always_ff @(posedge i_clk or negedge i_rstn) begin
+    if (!i_rstn) begin
       state <= IDLE;
       o_valid <= 1'b0;
       o_data <= 8'b0;

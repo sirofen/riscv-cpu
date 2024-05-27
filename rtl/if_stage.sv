@@ -10,7 +10,7 @@ module if_stage
   import rv_pkg::*;
 (
     input logic i_clk,
-    input logic i_rst,
+    input logic i_rstn,
     input logic i_stall,
     input logic i_do_branch,
     input logic [63:0] i_branch_target,
@@ -27,7 +27,7 @@ module if_stage
 
   pc pc_module (
       .i_clk(i_clk),
-      .i_rst(i_rst),
+      .i_rstn(i_rstn),
       .i_stall(i_stall),
       .i_we(pc_we),
       .i_pc(new_pc_val),

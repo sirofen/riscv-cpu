@@ -11,7 +11,7 @@ module id_stage
   import rv_pkg::*;
 (
     input logic i_clk,
-    input logic i_rst,
+    input logic i_rstn,
     input logic i_reg_we,
     input logic [4:0] i_write_reg,
     input logic [31:0] i_write_reg_data,
@@ -57,7 +57,7 @@ module id_stage
 
   reg_file_ff reg_file (
       .i_clk(i_clk),
-      .i_rst(i_rst),
+      .i_rstn(i_rstn),
       .i_rreg_0(read_reg_0),
       .o_rdata_0(reg_data_0),
       .i_rreg_1(read_reg_1),

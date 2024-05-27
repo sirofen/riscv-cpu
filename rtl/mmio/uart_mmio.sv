@@ -10,7 +10,7 @@ module uart_mmio #(
     parameter integer BASE_ADDR = 32'h1000_0000
 ) (
     input  logic        i_clk,
-    input  logic        i_rst,
+    input  logic        i_rstn,
     input  logic        i_uart_rx,
     output logic        o_uart_tx,
     input  logic [31:0] i_mmio_addr,
@@ -34,7 +34,7 @@ module uart_mmio #(
       .BAUD_RATE(BAUD_RATE)
   ) uart_rx_inst (
       .i_clk(i_clk),
-      .i_rst(i_rst),
+      .i_rstn(i_rstn),
       .i_uart_rx(i_uart_rx),
       .i_read_ack(read_ack),
       .o_data(rx_data),
@@ -46,7 +46,7 @@ module uart_mmio #(
       .BAUD_RATE(BAUD_RATE)
   ) uart_tx_inst (
       .i_clk(i_clk),
-      .i_rst(i_rst),
+      .i_rstn(i_rstn),
       .i_rdy(i_mmio_we && (i_mmio_addr == MMIO_TX_DATA_REG) && !tx_busy),
       .i_data(i_mmio_data_in),
       .o_uart_tx(o_uart_tx),

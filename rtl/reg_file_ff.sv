@@ -6,7 +6,7 @@ module reg_file_ff #(
     parameter logic [DataWidth-1:0] EmptyReg = 0
 ) (
     input logic i_clk,
-    input logic i_rst,
+    input logic i_rstn,
 
     // read reg line 0
     input logic [4:0] i_rreg_0,
@@ -39,8 +39,8 @@ module reg_file_ff #(
   generate
     genvar i;
     for (i = 1; i < REGS_NUM; i++) begin : gen_reg_file_flops
-      always_ff @(posedge i_clk or negedge i_rst) begin
-        if (!i_rst) begin
+      always_ff @(posedge i_clk or negedge i_rstn) begin
+        if (!i_rstn) begin
           regs[i] <= EmptyReg;
         end else if (write_enable_dec_0[i]) begin
           regs[i] <= i_wdata_0;

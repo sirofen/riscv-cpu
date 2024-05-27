@@ -6,7 +6,7 @@ module uart_tx #(
     parameter integer BAUD_RATE = 115_200
 ) (
     input  logic       i_clk,
-    input  logic       i_rst,
+    input  logic       i_rstn,
     input  logic       i_rdy,
     input  logic [7:0] i_data,
     output logic       o_uart_tx,
@@ -31,8 +31,8 @@ module uart_tx #(
     o_uart_tx = 1'b1;
   end
 
-  always_ff @(posedge i_clk or negedge i_rst) begin
-    if (!i_rst) begin
+  always_ff @(posedge i_clk or negedge i_rstn) begin
+    if (!i_rstn) begin
       state <= IDLE;
       o_uart_tx <= 1'b1;
       o_busy <= 1'b0;
