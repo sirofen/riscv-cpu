@@ -124,10 +124,10 @@ module mem_stage
   assign o_mem_wb_regs.inst_rd = i_ex_mem_regs.inst_rd;
   assign o_mem_wb_regs.wb_ctrl = i_ex_mem_regs.wb_ctrl;
 
-  typedef enum logic [2:0] {
+  typedef enum logic [1:0] {
     IDLE,
     READ_PENDING,
-    WRITE_PENDING,
+    WRITE_PENDING
   } mem_state_t;
 
   mem_state_t mem_state;
