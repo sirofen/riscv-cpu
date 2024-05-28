@@ -44,8 +44,8 @@ module mem_stage
   assign mmio_re = mem_ctrl.mem_read && (addr_read & MMIO_ADDR_MASK) == MMIO_BASE_ADDR;
   assign mmio_we = mem_ctrl.mem_write && (addr_read & MMIO_ADDR_MASK) == MMIO_BASE_ADDR;
 
-  assign data_mem_re = !o_mem_hazard && mem_ctrl.mem_write && (addr_read < MMIO_UART_ADDR);
-  assign data_mem_we = !o_mem_hazard && mem_ctrl.mem_read && (addr_read < MMIO_UART_ADDR);
+  assign data_mem_we = !o_mem_hazard && mem_ctrl.mem_write && (addr_read < MMIO_UART_ADDR);
+  assign data_mem_re = !o_mem_hazard && mem_ctrl.mem_read && (addr_read < MMIO_UART_ADDR);
 
   data_mem memory (
       .i_clk(i_clk),
@@ -124,10 +124,10 @@ module mem_stage
   assign o_mem_wb_regs.inst_rd = i_ex_mem_regs.inst_rd;
   assign o_mem_wb_regs.wb_ctrl = i_ex_mem_regs.wb_ctrl;
 
-  typedef enum logic [1:0] {
+  typedef enum logic [2:0] {
     IDLE,
     READ_PENDING,
-    WRITE_PENDING
+    WRITE_PENDING,
   } mem_state_t;
 
   mem_state_t mem_state;

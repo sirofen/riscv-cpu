@@ -26,6 +26,11 @@ module cpu
   logic load_mem_stall;
   logic mem_hazard;
 
+  logic stall_if;
+  logic stall_id;
+  logic stall_ex;
+  logic stall_mem;
+
   // if
   logic do_branch_to_if;
   logic [63:0] branch_target_to_if;
@@ -68,7 +73,7 @@ module cpu
   if_stage if_stage (
       .i_clk(i_clk),
       .i_rstn(i_rstn),
-      .i_stall(load_mem_stall),
+      .i_stall(stall_if),
       .i_do_branch(do_branch_to_if),
       .i_branch_target(branch_target_to_if),
       .o_if_id_regs(if_id_regs_from_if)
@@ -81,7 +86,7 @@ module cpu
       .i_write_reg(write_reg_to_id),
       .i_write_reg_data(write_reg_data_to_id),
       .i_if_id_regs(if_id_regs_to_id),
-      .i_stall(load_mem_stall),
+      .i_stall(stall_id),
       .o_id_ex_regs(id_ex_regs_from_id),
       .o_reg_data1(reg_data1_from_id),
       .o_reg_data2(reg_data2_from_id)
@@ -154,6 +159,14 @@ module cpu
       || id_ex_regs_to_ex.inst_rd == id_ex_regs_from_id.reg_rs2);
   end
 
+  always_comb begin
+    stall_if = load_mem_stall || mem_hazard;
+    stall_id = load_mem_stall || mem_hazard;
+    stall_ex = load_mem_stall || mem_hazard;
+    stall_mem = mem_hazard;
+  end
+
+
   logic flush_if_id;
   logic flush_id_ex;
 
@@ -168,8 +181,8 @@ module cpu
   assign do_branch_to_if = do_branch_from_ex;
 
   always_ff @(posedge i_clk) begin
-    if (load_mem_stall || mem_hazard) begin
-      id_ex_regs_to_ex <= 0;
+    if (stall_ex) begin
+      id_ex_regs_to_ex <= mem_hazard ? id_ex_regs_to_ex : 0;
     end else begin
       // flush if/id if/ex regs if branch was taken
       // id
@@ -179,11 +192,15 @@ module cpu
     end
 
     // ex
-    reg_data1_to_ex <= reg_data1_from_id;
-    reg_data2_to_ex <= reg_data2_from_id;
+    if (!stall_ex) begin
+      reg_data1_to_ex <= reg_data1_from_id;
+      reg_data2_to_ex <= reg_data2_from_id;
+    end
 
     // mem
-    ex_mem_regs_to_mem <= ex_mem_regs_from_ex;
+    if (!stall_mem) begin
+      ex_mem_regs_to_mem <= ex_mem_regs_from_ex;
+    end
 
     // wb
     mem_wb_regs_to_wb <= mem_wb_regs_from_mem;
