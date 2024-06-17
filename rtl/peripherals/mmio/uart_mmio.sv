@@ -1,8 +1,10 @@
 `ifndef UART_MMIO
 `define UART_MMIO
 
-`include "uart/uart_rx.sv"
-`include "uart/uart_tx.sv"
+`include "peripherals/system_bus_if.sv"
+
+`include "peripherals/mmio/uart/uart_rx.sv"
+`include "peripherals/mmio/uart/uart_tx.sv"
 
 module uart_mmio #(
     parameter integer CLOCK_HZ  = 50_000_000,
@@ -11,8 +13,7 @@ module uart_mmio #(
 ) (
     input  logic        i_clk,
     input  logic        i_rstn,
-    input  logic        i_uart_rx,
-    output logic        o_uart_tx,
+    system_bus_if.uart  io_uart,
     input  logic [31:0] i_mmio_addr,
     input  logic [ 7:0] i_mmio_data_in,
     output logic [ 7:0] o_mmio_data_out,
@@ -35,7 +36,7 @@ module uart_mmio #(
   ) uart_rx_inst (
       .i_clk(i_clk),
       .i_rstn(i_rstn),
-      .i_uart_rx(i_uart_rx),
+      .i_uart_rx(io_uart.uart_rx),
       .i_read_ack(read_ack),
       .o_data(rx_data),
       .o_valid(rx_valid)
@@ -49,7 +50,7 @@ module uart_mmio #(
       .i_rstn(i_rstn),
       .i_rdy(i_mmio_we && (i_mmio_addr == MMIO_TX_DATA_REG) && !tx_busy),
       .i_data(i_mmio_data_in),
-      .o_uart_tx(o_uart_tx),
+      .o_uart_tx(io_uart.uart_tx),
       .o_busy(tx_busy)
   );
 

@@ -1,6 +1,8 @@
 `ifndef GPIO_MMIO
 `define GPIO_MMIO
 
+`include "peripherals/system_bus_if.sv"
+
 module gpio_mmio #(
     parameter integer GPIO_WIDTH = 8,
     parameter integer BASE_ADDR  = 32'h2000_0000

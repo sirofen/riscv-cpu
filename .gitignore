@@ -4,5 +4,8 @@ output_files/
 riscv_cpu.qpf
 testbench/fw.bin
 testbench/out.sv
-testbench/out1.vcd
+*/out1.vcd
 testbench/obj_dir
+*.jou
+*.log
+

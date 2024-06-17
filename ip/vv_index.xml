@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<Index Version="1" Minor="0">
+	<Repository value="/home/seraf/dev/fpga/test-create-vivado-proj/ip">
+	</Repository>
+	<IP>
+		<VLNV value="fpga_master.edu:axi:axi_master_rw:1.0">
+		</VLNV>
+		<DisplayName value="axi_master_rw">
+		</DisplayName>
+		<Description value="AXI master IP core with basic rw interface">
+		</Description>
+		<CoreRevision value="33">
+		</CoreRevision>
+		<ComponentPath value="axi4_simple_master_rw_1_0/component.xml">
+		</ComponentPath>
+		<Families>
+			<Family name="kintex7">
+				<Part status="Pre-Production" name="ALL">
+				</Part>
+			</Family>
+		</Families>
+		<Taxonomies>
+			<Taxonomy value="AXI_Peripheral">
+			</Taxonomy>
+		</Taxonomies>
+		<LockPrevVersions value="false">
+		</LockPrevVersions>
+		<Interfaces>
+			<Interface value="AXI4">
+			</Interface>
+		</Interfaces>
+	</IP>
+</Index>
+

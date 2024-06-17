@@ -1,12 +1,11 @@
 # UART MMIO Base Address
-# 0x100 [7: 0] RX_DATA_REG
-# 0x104 [7: 0] TX_DATA_REG
-# 0x108 {6'b0, [1: 1] tx_busy, [0: 0] rx_valid}
-
+# 0x1000_0000 [7: 0] RX_DATA_REG
+# 0x1000_0004 [7: 0] TX_DATA_REG
+# 0x1000_0008 {6'b0, [1: 1] tx_busy, [0: 0] rx_valid}
 
 # initialization and setup
 _start:
-    addi s0, zero, 0x100    # UART MMIO
+    lui  s0,       0x10000  # UART MMIO
     addi s1, zero, 16       # Store size
     addi s2, zero, 13       # ASCII ('\r')
     addi s3, zero, 10       # ASCII ('\n')

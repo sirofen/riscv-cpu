@@ -11,16 +11,101 @@
 
 `include "fwd_unit.sv"
 
+`include "peripherals/system_bus_if.sv"
+
 module cpu
   import rv_pkg::*;
 (
     input logic i_clk,
-    // active low reset
     input logic i_rstn,
+    // uart
     input logic i_uart_rx,
     output logic o_uart_tx,
-    output logic [3:0] o_led
+    // led
+    output logic [3:0] o_led,
+
+    // ddr3
+    inout wire [31:0] ddr3_dq,
+    inout wire [ 3:0] ddr3_dqs_n,
+    inout wire [ 3:0] ddr3_dqs_p,
+
+    output wire [14:0] ddr3_addr,
+    output wire [2:0] ddr3_ba,
+    output wire ddr3_ras_n,
+    output wire ddr3_cas_n,
+    output wire ddr3_we_n,
+    output wire ddr3_reset_n,
+    output wire [0:0] ddr3_ck_p,
+    output wire [0:0] ddr3_ck_n,
+    output wire [0:0] ddr3_cke,
+    output wire [0:0] ddr3_cs_n,
+    output wire [3:0] ddr3_dm,
+    output wire [0:0] ddr3_odt,
+
+    // pcie
+    input pcie_ref_clk_n,
+    input pcie_ref_clk_p,
+    input  [3:0] pcie_rx_n,
+    input  [3:0] pcie_rx_p,
+    output [3:0] pcie_tx_n,
+    output [3:0] pcie_tx_p,
+
+    // eth
+    input  logic       eth_phy_rxc,
+    input  logic       eth_phy_rx_ctrl,
+    input  logic [3:0] eth_phy_rxd,
+    output logic       eth_phy_txc,
+    output logic       eth_phy_tx_ctrl,
+    output logic [3:0] eth_phy_txd,
+    output logic       eth_phy_rstn,
+    output logic       eth_mdc,
+    inout  logic       eth_mdio
 );
+
+  system_bus_if system_bus ();
+
+  // UART
+  assign system_bus.uart_rx = i_uart_rx;
+  assign system_bus.uart_tx = o_uart_tx;
+
+  // LED
+  assign system_bus.led = o_led;
+
+  // DDR3
+  assign system_bus.ddr3_dq = ddr3_dq;
+  assign system_bus.ddr3_dqs_n = ddr3_dqs_n;
+  assign system_bus.ddr3_dqs_p = ddr3_dqs_p;
+  assign system_bus.ddr3_addr = ddr3_addr;
+  assign system_bus.ddr3_ba = ddr3_ba;
+  assign system_bus.ddr3_ras_n = ddr3_ras_n;
+  assign system_bus.ddr3_cas_n = ddr3_cas_n;
+  assign system_bus.ddr3_we_n = ddr3_we_n;
+  assign system_bus.ddr3_reset_n = ddr3_reset_n;
+  assign system_bus.ddr3_ck_p = ddr3_ck_p;
+  assign system_bus.ddr3_ck_n = ddr3_ck_n;
+  assign system_bus.ddr3_cke = ddr3_cke;
+  assign system_bus.ddr3_cs_n = ddr3_cs_n;
+  assign system_bus.ddr3_dm = ddr3_dm;
+  assign system_bus.ddr3_odt = ddr3_odt;
+
+  // PCIe
+  assign system_bus.pcie_ref_clk_n = pcie_ref_clk_n;
+  assign system_bus.pcie_ref_clk_p = pcie_ref_clk_p;
+  assign system_bus.pcie_rx_n = pcie_rx_n;
+  assign system_bus.pcie_rx_p = pcie_rx_p;
+  assign system_bus.pcie_tx_n = pcie_tx_n;
+  assign system_bus.pcie_tx_p = pcie_tx_p;
+
+  // Ethernet
+  assign system_bus.eth_phy_rxc = eth_phy_rxc;
+  assign system_bus.eth_phy_rx_ctrl = eth_phy_rx_ctrl;
+  assign system_bus.eth_phy_rxd = eth_phy_rxd;
+  assign system_bus.eth_phy_txc = eth_phy_txc;
+  assign system_bus.eth_phy_tx_ctrl = eth_phy_tx_ctrl;
+  assign system_bus.eth_phy_txd = eth_phy_txd;
+  assign system_bus.eth_phy_rstn = eth_phy_rstn;
+  assign system_bus.eth_mdc = eth_mdc;
+  assign system_bus.eth_mdio = eth_mdio;
 
   // stall signals
   logic load_mem_stall;
@@ -30,6 +115,7 @@ module cpu
   logic stall_id;
   logic stall_ex;
   logic stall_mem;
+  logic stall_wb;
 
   // if
   logic do_branch_to_if;
@@ -101,15 +187,15 @@ module cpu
       .o_do_branch(do_branch_from_ex)
   );
 
-  mem_stage mem_stage (
+  mem_stage #(
+      .MEM_TYPE("DDR3")
+  ) mem_stage (
       .i_clk(i_clk),
       .i_rstn(i_rstn),
-      .i_uart_rx(i_uart_rx),
-      .o_uart_tx(o_uart_tx),
-      .o_gpio(o_led),
       .i_ex_mem_regs(ex_mem_regs_to_mem),
       .o_mem_wb_regs(mem_wb_regs_from_mem),
-      .o_mem_hazard(mem_hazard)
+      .o_mem_hazard(mem_hazard),
+      .system_bus(system_bus)
   );
 
   wb_stage wb_stage (
@@ -160,10 +246,11 @@ module cpu
   end
 
   always_comb begin
-    stall_if = load_mem_stall || mem_hazard;
-    stall_id = load_mem_stall || mem_hazard;
-    stall_ex = load_mem_stall || mem_hazard;
+    stall_if  = load_mem_stall || mem_hazard;
+    stall_id  = load_mem_stall || mem_hazard;
+    stall_ex  = load_mem_stall || mem_hazard;
     stall_mem = mem_hazard;
+    stall_wb  = mem_hazard;
   end
 
 
@@ -203,7 +290,9 @@ module cpu
     end
 
     // wb
-    mem_wb_regs_to_wb <= mem_wb_regs_from_mem;
+    if (!stall_wb) begin
+      mem_wb_regs_to_wb <= mem_wb_regs_from_mem;
+    end
 
   end
 

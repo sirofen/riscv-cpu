@@ -66,6 +66,7 @@ module data_mem
         end
         default: ;
       endcase
+    end else begin
     end
   end
 

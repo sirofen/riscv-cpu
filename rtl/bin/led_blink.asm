@@ -1,6 +1,6 @@
 # LED 0x200 [3:0]
 _start:
-    addi s3, zero, 0x200
+    lui s3, zero, 0x20000
     lui  s4, 0x1000
     addi  s2, zero, 15
 
